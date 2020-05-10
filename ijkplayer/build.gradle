@@ -14,6 +14,10 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
+
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
     }
 
     buildTypes {
@@ -40,7 +44,7 @@ dependencies {
 
     // ijkplayer, https://github.com/bilibili/ijkplayer
     //  required, enough for most devices.
-    implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
+    api 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
     implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
 
     // Other ABIs: optional
@@ -50,6 +54,6 @@ dependencies {
     // implementation 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.8'
 
     // ExoPlayer as IMediaPlayer: optional, experimental
-    implementation 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.8'
+    api 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.8'
 
 }
