@@ -71,8 +71,8 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private static final int STATE_IDLE = 0;
     private static final int STATE_PREPARING = 1;
     private static final int STATE_PREPARED = 2;
-    private static final int STATE_PLAYING = 3;
-    private static final int STATE_PAUSED = 4;
+    public static final int STATE_PLAYING = 3;
+    public static final int STATE_PAUSED = 4;
     private static final int STATE_PLAYBACK_COMPLETED = 5;
 
     // mCurrentState is a VideoView object's current state.
@@ -607,8 +607,10 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
         @Override
         public void onSeekComplete(IMediaPlayer mp) {
-            mSeekEndTime = System.currentTimeMillis();
-            mHudViewHolder.updateSeekCost(mSeekEndTime - mSeekStartTime);
+            if (mHudViewHolder != null) {
+                mSeekEndTime = System.currentTimeMillis();
+                mHudViewHolder.updateSeekCost(mSeekEndTime - mSeekStartTime);
+            }
         }
     };
 
@@ -821,6 +823,10 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
         if (isInPlaybackState()) {
             mMediaPlayer.start();
             mCurrentState = STATE_PLAYING;
+            // add callback when starting from paused
+            if (mOnInfoListener != null && mTargetState == STATE_PAUSED) {
+                mOnInfoListener.onInfo(null, mCurrentState, 0);
+            }
         }
         mTargetState = STATE_PLAYING;
     }
@@ -831,6 +837,10 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
                 mCurrentState = STATE_PAUSED;
+                // add callback when paused,
+                if (mOnErrorListener != null) {
+                    mOnErrorListener.onError(null, STATE_PAUSED, 0);
+                }
             }
         }
         mTargetState = STATE_PAUSED;
