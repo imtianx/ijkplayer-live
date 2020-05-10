@@ -1,4 +1,4 @@
-package cn.imtianx.ijkplayer
+package cn.imtianx.ijkplayer.test
 
 import org.junit.Test
 
