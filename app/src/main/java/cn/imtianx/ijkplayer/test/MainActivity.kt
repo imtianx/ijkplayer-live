@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import cn.imtianx.ijkplayer.widget.media.IRenderView
 import cn.imtianx.ijkplayer.widget.media.IjkVideoView
 import kotlinx.android.synthetic.main.activity_main.*
+import tv.danmaku.ijk.media.player.IMediaPlayer
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
             setOnInfoListener { iMediaPlayer, i, i2 ->
                 Log.e("tx", "setOnInfoListener =======> i: $i\t\ti2: $i2")
-                if (i != IjkVideoView.STATE_PLAYING) {
+                if (i != IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
                     false
                 } else {
                     iv_cover.isVisible = false

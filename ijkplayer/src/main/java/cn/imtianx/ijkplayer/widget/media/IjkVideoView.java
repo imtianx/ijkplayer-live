@@ -539,6 +539,8 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                         case IMediaPlayer.MEDIA_INFO_AUDIO_RENDERING_START:
                             Log.d(TAG, "MEDIA_INFO_AUDIO_RENDERING_START:");
                             break;
+                        default:
+                            break;
                     }
                     return true;
                 }
@@ -1112,7 +1114,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzeduration", 1);
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100);
                     // 播放前探测 size,默认 1M
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 10240);
+                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 1024*10);
 
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "flush_packets", 1);
                     // 播放器缓冲
