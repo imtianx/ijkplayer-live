@@ -127,6 +127,11 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     private TextView subtitleDisplay;
 
+    // is enable looping
+    private boolean isEnableLooping = false;
+    // is enable reconnect when not network
+    private boolean isEnableReconnect = true;
+
     public IjkVideoView(Context context) {
         super(context);
         initVideoView(context);
@@ -180,6 +185,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                 Gravity.BOTTOM);
         addView(subtitleDisplay, layoutParams_txt);
     }
+
 
     public void setRenderView(IRenderView renderView) {
         if (mRenderView != null) {
@@ -1114,13 +1120,22 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzeduration", 1);
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100);
                     // 播放前探测 size,默认 1M
-                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 1024*10);
+                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 1024 * 10);
 
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "flush_packets", 1);
                     // 播放器缓冲
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "packet-buffering", 0);
                     // 跳帧开关
                     ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
+
+                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "enable-accurate-seek", 1);
+                    ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "fflags", "fastseek");
+
+                    // ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "infbuf", 1);
+
+                    if (isEnableReconnect) {
+                        ijkMediaPlayer.setLooping(true);
+                    }
                 }
                 mediaPlayer = ijkMediaPlayer;
             }
@@ -1129,6 +1144,10 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
         if (mSettings.getEnableDetachedSurfaceTextureView()) {
             mediaPlayer = new TextureMediaPlayer(mediaPlayer);
+        }
+
+        if (mediaPlayer instanceof IjkMediaPlayer && isEnableReconnect) {
+            ((IjkMediaPlayer) mediaPlayer).setOnNativeInvokeListener((i, bundle) -> true);
         }
 
         return mediaPlayer;
@@ -1310,5 +1329,13 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     public int getSelectedTrack(int trackType) {
         return MediaPlayerCompat.getSelectedTrack(mMediaPlayer, trackType);
+    }
+
+    public void setEnableLooping(boolean enableLooping) {
+        isEnableLooping = enableLooping;
+    }
+
+    public void setEnableReconnect(boolean enableReconnect) {
+        isEnableReconnect = enableReconnect;
     }
 }
