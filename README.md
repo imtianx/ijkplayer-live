@@ -1,8 +1,17 @@
-# ijkplayer-live
+- [ ijkplayer-live](#head1)
+	- [ijkplayer 使用相关](#head2)
+		- [ ijk 简单使用](#head3)
+		- [IMediaPlayer 推流秒开相关参数设置](#head4)
+		- [ 断网重连](#head5)
+	- [VideoView 播放 mp4](#head6)
+	- [ 参考文章](#head7)
+# <span id="head1"> ijkplayer-live</span>
 
 > [ijkplayer](https://github.com/bilibili/ijkplayer) 播放直播流优化及秒开参数设置。
 
-##  简单使用使用
+## <span id="head2">ijkplayer 使用相关</span>
+
+### <span id="head3"> ijk 简单使用</span>
 1. 添加 `IjkVideoView` ；
 
 ```
@@ -45,7 +54,7 @@ ijkVideoView.apply {
 ```
 > 相关状态码可参见 **IMediaPlayer** 类。
 >
-## IMediaPlayer 推流秒开相关参数设置
+### <span id="head4">IMediaPlayer 推流秒开相关参数设置</span>
 
 1. 环路过滤，0开启，画面质量高,开销大；48关闭：
 
@@ -85,7 +94,65 @@ ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
 ```
 > 完整配置参见 ：[IjkVideoView#createPlayer](https://github.com/imtianx/ijkplayer-live/blob/master/ijkplayer/src/main/java/cn/imtianx/ijkplayer/widget/media/IjkVideoView.java)
 
-## 参考文章
+### <span id="head5"> 断网重连</span>
+
+url 前添加 `ijkhttphook:`,然后设置如下监听,返回 true：
+
+```
+if (mediaPlayer instanceof IjkMediaPlayer) {
+((IjkMediaPlayer) mediaPlayer).setOnNativeInvokeListener((i, bundle) -> true);
+}
+```
+
+
+## <span id="head6">VideoView 播放 mp4</span>
+
+1. 无法全屏，可重写 `onMeasure` 方法，如下：
+```
+class FullScreenVideoView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 1
+) : VideoView(context, attrs, defStyleAttr) {
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        setMeasuredDimension(
+            View.getDefaultSize(0, widthMeasureSpec),
+            View.getDefaultSize(0, heightMeasureSpec)
+        )
+    }
+}
+```
+
+2. 播放本地 mp4
+> 可使用具体的文件路径，但需要读取 存储卡权限，可以放在 `res/raw` 通过 `uri` 访问。
+
+```
+// 设置播放文件
+mVideoView.setVideoURI(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.video_login_bg));
+mVideoView.setOnPreparedListener(mp -> mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING));
+mVideoView.setOnCompletionListener(mp -> {
+    // 播放完成回调，若需循环播放需设置如下代码
+    mp.setLooping(true);
+    mp.start();
+});
+mVideoView.setOnInfoListener((mp, what, extra) -> {
+    imgBg.setVisibility(View.GONE);
+    return false;
+});
+mVideoView.setOnErrorListener((mp, what, extra) -> {
+    imgBg.setVisibility(View.VISIBLE);
+    return false;
+});
+mVideoView.start();
+```
+
+3. 切换到后台再返回黑屏
+可以在 `onResume` 中重新初始化并播放。
+
+
+## <span id="head7"> 参考文章</span>
 [ijkplayer中遇到的问题汇总](https://juejin.im/post/5e79fc0d6fb9a07ca1373d20)
 
 
